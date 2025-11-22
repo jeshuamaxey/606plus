@@ -320,21 +320,37 @@ async function populateCMS() {
     }
   }
   
-  // Create items
-  console.log(`Creating ${items.length} items...`)
+  // Create items as drafts
+  console.log(`Creating ${items.length} items as drafts...`)
   let created = 0
   let skipped = 0
   
   for (const item of items) {
     try {
-      // Check if item already exists
-      const existing = await client.fetch(
-        `*[_type == "item" && number == $number][0]`,
-        {number: item.number}
-      ).catch(handle403Error)
+      // Check if item already exists (check both published and drafts)
+      const draftId = `drafts.item-${item.number}`
+      const [existingPublished, existingDraft] = await Promise.all([
+        // Check for published items with this number
+        client.fetch(
+          `*[_type == "item" && number == $number][0]`,
+          {number: item.number}
+        ).catch(handle403Error),
+        // Check for existing draft with this ID
+        client.fetch(
+          `*[_id == $draftId][0]`,
+          {draftId}
+        ).catch(handle403Error),
+      ])
       
-      if (existing) {
-        console.log(`Item #${item.number} already exists, skipping`)
+      // Skip if published item exists, or if draft exists (unless published item also exists)
+      if (existingPublished) {
+        console.log(`Item #${item.number} already exists as published, skipping`)
+        skipped++
+        continue
+      }
+      
+      if (existingDraft) {
+        console.log(`Item #${item.number} already exists as draft, skipping`)
         skipped++
         continue
       }
@@ -371,8 +387,10 @@ async function populateCMS() {
       // Parse year
       const {yearStart, yearEnd} = parseYear(item.year)
       
-      // Create item
+      // Create item as draft (prefixed with "drafts.")
+      // Use the draftId already defined above
       await client.create({
+        _id: draftId,
         _type: 'item',
         number: item.number,
         name: item.name,
@@ -409,7 +427,8 @@ async function populateCMS() {
     }
   }
   
-  console.log(`\nDone! Created ${created} items, skipped ${skipped} existing items`)
+  console.log(`\nDone! Created ${created} items as drafts, skipped ${skipped} existing items`)
+  console.log(`Note: Items are created as drafts. Use the /admin/review page to publish them.`)
 }
 
 // Run the script

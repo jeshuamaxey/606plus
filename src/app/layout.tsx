@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Stack_Sans_Notch } from "next/font/google";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -10,6 +10,15 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+// Stack Sans Notch - Bold display font for headings
+// Available on Google Fonts: https://fonts.google.com/specimen/Stack+Sans+Notch
+const stackSansNotch = Stack_Sans_Notch({
+  variable: "--font-stack-sans-notch",
+  subsets: ["latin"],
+  weight: "700", // Bold weight for display headings
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -25,7 +34,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${stackSansNotch.variable} antialiased`}
       >
         {children}
       </body>

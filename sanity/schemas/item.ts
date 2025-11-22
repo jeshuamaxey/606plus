@@ -18,6 +18,24 @@ export default defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
+      name: 'slug',
+      title: 'Slug',
+      type: 'slug',
+      options: {
+        source: 'name',
+        maxLength: 96,
+      },
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'image',
+      title: 'Image',
+      type: 'image',
+      options: {
+        hotspot: true,
+      },
+    }),
+    defineField({
       name: 'category',
       title: 'Category',
       type: 'reference',
@@ -59,11 +77,13 @@ export default defineType({
       title: 'name',
       subtitle: 'category.name',
       number: 'number',
+      media: 'image',
     },
-    prepare({title, subtitle, number}) {
+    prepare({title, subtitle, number, media}) {
       return {
         title: `${number ? `#${number}: ` : ''}${title}`,
         subtitle: subtitle,
+        media: media,
       }
     },
   },
