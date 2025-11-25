@@ -84,6 +84,49 @@ function formatSubtitle(item: HomepageItem): string {
 }
 
 /**
+ * Generate descriptive alt text for images
+ */
+function generateImageAlt(item: HomepageItem): string {
+  const parts: string[] = [item.name]
+  
+  if (item.designer?.name) {
+    parts.push(`by ${item.designer.name}`)
+  }
+  
+  if (item.category?.name) {
+    parts.push(`- ${item.category.name}`)
+  }
+  
+  return parts.join(' ')
+}
+
+/**
+ * Generate a slug from a name (fallback if slug doesn't exist)
+ * Exported for use in other modules
+ */
+export function generateSlugFromName(name: string): string {
+  return generateSlug(name);
+}
+
+/**
+ * Fetch all published item slugs for sitemap generation
+ */
+export async function getAllItemSlugs(): Promise<Array<{ slug: string; _updatedAt: string }>> {
+  try {
+    const query = `*[_type == "item" && !(_id in path("drafts.**")) && defined(slug.current)] {
+      "slug": slug.current,
+      _updatedAt
+    }`;
+    
+    const items = await client.fetch<Array<{ slug: string; _updatedAt: string }>>(query);
+    return items || [];
+  } catch (error) {
+    console.error('Error fetching item slugs:', error);
+    return [];
+  }
+}
+
+/**
  * Fetch published items from Sanity CMS for homepage
  */
 export async function getHomepageItems(): Promise<TransformedItem[]> {
@@ -118,7 +161,7 @@ export async function getHomepageItems(): Promise<TransformedItem[]> {
           title: item.name,
           subtitle: formatSubtitle(item),
           image: imageUrl,
-          imageAlt: item.name,
+          imageAlt: generateImageAlt(item),
           href: `/items/${slug}`,
         }
       })
