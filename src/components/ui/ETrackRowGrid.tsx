@@ -81,40 +81,58 @@ export function ETrackRowGrid({
 
   return (
     <div className={className}>
-      {/* Wrap entire grid in ETrackContainer with right track for right edge */}
-      <ETrackContainer right>
-        <div className={`grid grid-cols-1 ${gridColsClasses[columns]} gap-x-0 ${rowSpacingClasses[rowSpacing]}`}>
-          {rowsData.map((rowItems, rowIndex) => (
-            <React.Fragment key={rowIndex}>
-              {rowItems.map((item, colIndex) => (
-                <ETrackContainer
-                  key={colIndex}
-                  left
-                  className="hidden md:block"
-                >
-                  <CatalogueItem
-                    title={item.title}
-                    subtitle={item.subtitle}
-                    image={item.image}
-                    imageAlt={item.imageAlt}
-                    href={item.href}
-                  />
-                </ETrackContainer>
-              ))}
-              {/* Fill remaining columns in row if needed */}
-              {rowItems.length < columns && Array.from({ length: columns - rowItems.length }).map((_, i) => (
-                <ETrackContainer
-                  key={`empty-${i}`}
-                  left
-                  className="hidden md:block"
-                >
-                  {/* Empty cell */}
-                </ETrackContainer>
-              ))}
-            </React.Fragment>
-          ))}
-        </div>
-      </ETrackContainer>
+      {/* Mobile: Full width with e-tracks on both sides */}
+      <div className="md:hidden -mx-6">
+        <ETrackContainer left right>
+          <div className={`grid grid-cols-1 gap-x-0 ${rowSpacingClasses[rowSpacing]}`}>
+            {items.map((item, index) => (
+              <CatalogueItem
+                key={index}
+                title={item.title}
+                subtitle={item.subtitle}
+                image={item.image}
+                imageAlt={item.imageAlt}
+                href={item.href}
+              />
+            ))}
+          </div>
+        </ETrackContainer>
+      </div>
+      
+      {/* Desktop: Wrap entire grid in ETrackContainer with right track for right edge */}
+      <div className="hidden md:block">
+        <ETrackContainer right>
+          <div className={`grid ${gridColsClasses[columns]} gap-x-0 ${rowSpacingClasses[rowSpacing]}`}>
+            {rowsData.map((rowItems, rowIndex) => (
+              <React.Fragment key={rowIndex}>
+                {rowItems.map((item, colIndex) => (
+                  <ETrackContainer
+                    key={colIndex}
+                    left
+                  >
+                    <CatalogueItem
+                      title={item.title}
+                      subtitle={item.subtitle}
+                      image={item.image}
+                      imageAlt={item.imageAlt}
+                      href={item.href}
+                    />
+                  </ETrackContainer>
+                ))}
+                {/* Fill remaining columns in row if needed */}
+                {rowItems.length < columns && Array.from({ length: columns - rowItems.length }).map((_, i) => (
+                  <ETrackContainer
+                    key={`empty-${i}`}
+                    left
+                  >
+                    {/* Empty cell */}
+                  </ETrackContainer>
+                ))}
+              </React.Fragment>
+            ))}
+          </div>
+        </ETrackContainer>
+      </div>
     </div>
   );
 }
