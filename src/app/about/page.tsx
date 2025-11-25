@@ -5,6 +5,30 @@ import { Section } from '@/components/ui/Section';
 import { Heading, BodyText } from '@/components/ui/Typography';
 import { ImageDisplay } from '@/components/ui/ImageDisplay';
 import { ETrackContainer } from '@/components/ui/ETrackContainer';
+import type { Metadata } from 'next';
+
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://606plus.jeshua.dev';
+
+export const metadata: Metadata = {
+  title: "About",
+  description: "Learn about the 606+ catalogue, a personal project documenting timeless design objects that share the Vitsoe 606 Universal Shelving System's principles of permanence, precision, and function.",
+  openGraph: {
+    title: "About | 606+",
+    description: "Learn about the 606+ catalogue, a personal project documenting timeless design objects inspired by Dieter Rams' Vitsoe 606 system.",
+    url: `${siteUrl}/about`,
+    images: [
+      {
+        url: `${siteUrl}/606-Universal-Shelving-System.jpg`,
+        width: 1200,
+        height: 630,
+        alt: "Vitsoe 606 Universal Shelving System, designed by Dieter Rams, 1960",
+      },
+    ],
+  },
+  alternates: {
+    canonical: `${siteUrl}/about`,
+  },
+};
 
 export default function AboutPage() {
   const navLinks = [
