@@ -40,12 +40,12 @@ export function CatalogueItem({
   };
 
   const imageContainer = (
-    <div className={`${aspectClasses[aspectRatio]} relative bg-neutral-100 overflow-hidden grayscale transition-all duration-300 ease-in-out group-hover:grayscale-0`}>
+    <div className={`${aspectClasses[aspectRatio]} relative bg-neutral-100 overflow-hidden`}>
       <Image
         src={image}
         alt={imageAlt || title}
         fill
-        className="object-cover"
+        className="object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
         sizes="(max-width: 768px) 100vw, 33vw"
       />
     </div>
