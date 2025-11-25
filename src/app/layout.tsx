@@ -1,3 +1,4 @@
+import { Analytics } from "@vercel/analytics/next"
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Stack_Sans_Notch } from "next/font/google";
 import "./globals.css";
@@ -77,6 +78,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} ${stackSansNotch.variable} antialiased`}
       >
         {children}
+        <Analytics />
       </body>
     </html>
   );

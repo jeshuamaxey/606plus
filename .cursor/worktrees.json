@@ -1,5 +1,6 @@
 {
   "setup-worktree": [
-    "npm install"
+    "npm install",
+    "cp ../../../../dev/606/.env.local .env.local"
   ]
 }

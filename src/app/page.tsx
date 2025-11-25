@@ -96,7 +96,7 @@ export default async function Home() {
       <Navigation links={navLinks} />
       
       <main className="flex-1">
-        <Section spacing="lg">
+        <Section spacing="lg" className="py-0 md:py-24">
           <Container size="lg">
             {/* Hero Section with H1 */}
             <div className="mb-12 text-center max-w-3xl mx-auto">
