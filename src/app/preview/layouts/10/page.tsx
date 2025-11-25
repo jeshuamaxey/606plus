@@ -39,9 +39,6 @@ export default function Layout10Page() {
             items={items}
             columns={3}
             rowSpacing="none"
-            itemPadding="xs"
-            showEdgeTracks={true}
-            showBetweenTracks={true}
           />
         </Container>
       </Section>
