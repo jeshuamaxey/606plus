@@ -18,7 +18,7 @@ export default async function Home() {
       <Navigation links={navLinks} />
       
       <main className="flex-1">
-        <Section spacing="lg">
+        <Section spacing="lg" className="py-0 md:py-24">
           <Container size="lg">
             <ETrackRowGrid
               items={items}
