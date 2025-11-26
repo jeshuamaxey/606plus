@@ -18,6 +18,13 @@ export interface Item {
   _type: string
   number?: number
   name?: string
+  images?: Array<{
+    _key?: string
+    asset?: {
+      _ref?: string
+      _type?: string
+    }
+  }>
   category?: {
     _id: string
     _type: string
@@ -39,6 +46,56 @@ export interface Item {
   isDraft?: boolean
 }
 
+export function isIncomplete(item: Item): boolean {
+  // Check if item has no images
+  const hasNoImages = !item.images || item.images.length === 0
+  
+  // Check if item has no name
+  const hasNoName = !item.name || item.name.trim().length === 0
+  
+  // Check if description is very short (under 300 characters)
+  const hasShortDescription = !item.description || item.description.trim().length < 300
+  
+  // Check if item has no brand
+  const hasNoBrand = !item.brand || !item.brand.name
+  
+  // Check if item has no category
+  const hasNoCategory = !item.category || !item.category.name
+  
+  return hasNoImages || hasNoName || hasShortDescription || hasNoBrand || hasNoCategory
+}
+
+export function getMissingFields(item: Item): string[] {
+  const missing: string[] = []
+  
+  // Check if item has no images
+  if (!item.images || item.images.length === 0) {
+    missing.push('images')
+  }
+  
+  // Check if item has no name
+  if (!item.name || item.name.trim().length === 0) {
+    missing.push('name')
+  }
+  
+  // Check if description is very short (under 300 characters)
+  if (!item.description || item.description.trim().length < 300) {
+    missing.push('description')
+  }
+  
+  // Check if item has no brand
+  if (!item.brand || !item.brand.name) {
+    missing.push('brand')
+  }
+  
+  // Check if item has no category
+  if (!item.category || !item.category.name) {
+    missing.push('category')
+  }
+  
+  return missing
+}
+
 async function getItems(): Promise<Item[]> {
   try {
     // Fetch all items - Sanity will return both published and drafts
@@ -49,6 +106,7 @@ async function getItems(): Promise<Item[]> {
       _type,
       number,
       name,
+      images,
       category->{_id, _type, name},
       designer->{_id, _type, name},
       brand->{_id, _type, name},
