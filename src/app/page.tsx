@@ -21,7 +21,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const itemCount = items.length;
 
   return {
-    title: "Design object catalogue",
+    title: "606+ | Design object catalogue",
     description: `A curated collection of ${itemCount} design objects that complement the Vitsoe 606 shelving system. Pleasing to the eye, rewarding to explore.`,
     openGraph: {
       title: "606+ | Design object catalogue",
