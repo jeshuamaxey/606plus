@@ -63,114 +63,58 @@ A dedicated page for displaying individual catalogue items, accessed via `/items
 
 ## Data Requirements
 
-### Current Schema Support
-- ✅ Single image (`image`)
+### Current Schema Implementation ✅
+- ✅ **Images array** (`images`) - Multiple images per item
 - ✅ Name, number, slug
-- ✅ Category (reference)
+- ✅ Category (reference, required)
 - ✅ Designer (reference, optional)
 - ✅ Brand (reference, optional)
 - ✅ Year range (yearStart, yearEnd)
 - ✅ Description (text)
+- ✅ Materials (string, optional)
+- ✅ Dimensions (string, optional)
+- ✅ Alt text (required for each image)
+- ✅ Credit (optional for each image)
 
-### Schema Enhancements Needed
-- ⚠️ **Multiple Images**: Current schema only supports single image
-  - **Option A**: Add `images` array field to item schema
-  - **Option B**: Use single image for now, plan gallery enhancement later
-  - **Recommendation**: Add `images` array for future-proofing
+## Components Used
 
-## Components to Build/Create
+### Implementation Approach
+- **No new components created** - Used existing components and CSS Grid
+- **Direct implementation** in page component
 
-### New Components Needed
-
-1. **`ItemImageGallery`** (NEW)
-   - Purpose: Display multiple images with navigation
-   - Features:
-     - Main image display
-     - Thumbnail strip or grid
-     - Image transitions
-     - Optional: Lightbox mode
-   - Props: `images: string[]`, `alt: string`, `variant?: 'thumbnails' | 'carousel'`
-
-2. **`ItemMetadata`** (NEW)
-   - Purpose: Structured display of item metadata
-   - Features:
-     - Label-value pairs
-     - Link support for references
-     - Clean typography hierarchy
-   - Props: `item: ItemData`, `showLinks?: boolean`
-
-3. **`MetadataRow`** (NEW - optional sub-component)
-   - Purpose: Single metadata row (label + value)
-   - Features:
-     - Consistent spacing
-     - Link support
-   - Props: `label: string`, `value: string | ReactNode`, `href?: string`
-
-4. **`AsymmetricLayout`** (NEW - optional utility component)
-   - Purpose: Reusable asymmetric 2-column layout
-   - Features:
-     - 2/3 and 1/3 column widths
-     - Responsive stacking
-   - Props: `left: ReactNode`, `right: ReactNode`, `gap?: 'sm' | 'md' | 'lg'`
-
-### Existing Components to Use
-- ✅ `ImageDisplay` - For individual images
+### Components Used
+- ✅ `Image` (Next.js) - For image display
 - ✅ `Typography` (Heading, BodyText, Label) - For text content
 - ✅ `Badge` - For category tags
-- ✅ `Button` or `Link` - For navigation links
 - ✅ `Container` & `Section` - For layout structure
 - ✅ `Divider` - For visual separation
+- ✅ `ETrack` - For vertical borders
+- ✅ `Navigation` & `Footer` - For page structure
 
-## Implementation Steps
+## Implementation Status
 
-### Phase 1: Schema & Data Layer
-1. **Decide on multiple images approach**
-   - If adding `images` array: Update `sanity/schemas/item.ts`
-   - If using single image: Document limitation for now
+### ✅ Phase 1: Schema & Data Layer - COMPLETE
+1. ✅ Added `images` array field to schema
+2. ✅ Created `getItemBySlug()` function
+3. ✅ Fetches full item data with resolved references
+4. ✅ Includes all metadata fields (materials, dimensions added)
 
-2. **Create Sanity query function**
-   - Add `getItemBySlug()` to `src/lib/sanity.ts`
-   - Fetch full item data with resolved references
-   - Include all metadata fields
+### ✅ Phase 2: Core Components - COMPLETE
+1. ✅ Used existing components (no new components needed)
+2. ✅ Implemented image display directly in page
+3. ✅ CSS Grid for asymmetric layout
 
-### Phase 2: Core Components
-1. **Build `ItemMetadata` component**
-   - Start with static data
-   - Support for optional fields
-   - Link generation for references
+### ✅ Phase 3: Page Implementation - COMPLETE
+1. ✅ Created `/app/items/[slug]/page.tsx`
+2. ✅ Server component with data fetching
+3. ✅ 404 handling with `not-found.tsx`
+4. ✅ Navigation wired up from homepage
 
-2. **Build `ItemImageGallery` component**
-   - Start with single image support
-   - Add gallery functionality if multiple images available
-   - Consider: Image optimization, lazy loading
-
-3. **Build `AsymmetricLayout` component** (or use CSS Grid directly)
-   - Test responsive behavior
-   - Ensure proper spacing
-
-### Phase 3: Page Implementation
-1. **Create `/app/items/[slug]/page.tsx`**
-   - Server component (Next.js App Router)
-   - Fetch item data
-   - Handle 404 for missing items
-   - Render layout with components
-
-2. **Wire up navigation**
-   - Ensure `CatalogueItem` links work correctly
-   - Test routing
-
-### Phase 4: Enhancement & Polish
-1. **Add related items section** (optional)
-   - "More from this designer"
-   - "More in this category"
-   
-2. **Add breadcrumbs** (optional)
-   - Home > Category > Item
-
-3. **SEO optimization**
-   - Meta tags
-   - Open Graph images
-   - Structured data
+### 🔄 Phase 4: Enhancement & Polish - FUTURE
+- Related items section (not implemented)
+- Breadcrumbs (not implemented)
+- SEO optimization (not implemented)
+- Links to designer/brand/category pages (prepared but pages not created)
 
 ## Design Considerations
 
@@ -191,60 +135,28 @@ A dedicated page for displaying individual catalogue items, accessed via `/items
 - Consider subtle background colors for metadata panel
 - Images: Full bleed or contained with padding?
 
-## Questions for Clarification
+## Implementation Decisions Made
 
-1. **Multiple Images**
-   - Do you want to add an `images` array field to the schema now?
-   - Or should we start with single image and add gallery later?
-   - How many images per item do you anticipate?
+1. **Multiple Images**: ✅ Implemented `images` array field
+2. **Image Gallery Style**: Sequential display (vertical stack) - simple and clean
+3. **Right Column Behavior**: Scrolls naturally with content (not sticky)
+4. **Related Links**: Prepared but pages not created yet
+5. **Additional Metadata**: ✅ Added materials and dimensions fields
+6. **Design Direction**: ✅ Follows minimal aesthetic from preview page
+7. **Component Approach**: ✅ Built directly in page context (no isolated components)
 
-2. **Image Gallery Style**
-   - Preference: Thumbnail strip, carousel, or grid?
-   - Should images be full-bleed or contained?
-   - Do you want a lightbox/modal for full-screen viewing?
+## Final Implementation
 
-3. **Right Column Behavior**
-   - Should the metadata panel be sticky (stay visible while scrolling)?
-   - Or should it scroll naturally with content?
-
-4. **Related Links**
-   - Do you want to create designer/brand/category pages now?
-   - Or should links be prepared but pages created later?
-   - What should the "related items" section show? (same designer, same category, etc.)
-
-5. **Additional Metadata**
-   - Are there other fields you want to display? (materials, dimensions, etc.)
-   - Should we add these to the schema now or later?
-
-6. **Design Direction**
-   - Should this page follow the "Minimal Direction" from your preview page?
-   - Or a different aesthetic?
-   - Any specific inspiration from the Vitsoe 606 catalogue?
-
-7. **Component Isolation**
-   - Should we build `ItemMetadata` and `ItemImageGallery` as isolated components first?
-   - Or build them in context of the page?
-
-## Recommended Approach
-
-### Start with MVP, then enhance:
-1. **MVP Version**:
-   - Single image (use existing schema)
-   - Basic metadata display
-   - Asymmetric layout
-   - Essential links (if pages exist)
-
-2. **Enhanced Version**:
-   - Multiple images gallery
-   - Related items section
-   - Sticky metadata panel
-   - Rich metadata display
-
-### Component Development Order:
-1. **First**: `ItemMetadata` component (can be tested in isolation)
-2. **Second**: `AsymmetricLayout` or CSS Grid implementation
-3. **Third**: `ItemImageGallery` (start simple, enhance later)
-4. **Fourth**: Page implementation tying it all together
+### What Was Built
+- ✅ Images array with multiple images support
+- ✅ Asymmetric 2-column layout (2/3 + 1/3)
+- ✅ E-track borders for visual structure
+- ✅ Square aspect ratio for all images
+- ✅ Hotspot support for intelligent cropping
+- ✅ Alt text (required) and credit (optional) fields
+- ✅ Full metadata display including materials and dimensions
+- ✅ Responsive design
+- ✅ 404 error handling
 
 ## Technical Notes
 

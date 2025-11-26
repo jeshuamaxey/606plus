@@ -1,19 +1,20 @@
 # Image Aspect Ratio & Rendering Guide
 
-## Current Situation
+## Current Implementation
 
 ### Where Images Are Displayed
 
 1. **Homepage (CatalogueItem)**
-   - Default aspect ratio: **Square (1:1)**
-   - Options: Square, Wide (4:3), Tall (3:4)
+   - Aspect ratio: **Square (1:1)**
    - Uses `object-cover` - crops image to fill container
    - Mobile: Full width, Desktop: ~33% width (3 columns)
+   - Uses first image from `images` array
 
 2. **Item Detail Page**
-   - Fixed aspect ratio: **4:3 (Landscape)**
+   - Aspect ratio: **Square (1:1)** for all images
    - Uses `object-cover` - crops image to fill container
    - Mobile: Full width, Desktop: ~66% width (2/3 column)
+   - Displays all images from `images` array sequentially
 
 3. **ImageDisplay Component**
    - Options: Square (1:1), Portrait (3:4), Landscape (4:3), Wide (16:9)
@@ -143,13 +144,14 @@ If you upload a **portrait image (3:4)** but it displays in a **square (1:1)** c
 
 ---
 
-## Recommended Solution: Hybrid Approach
+## Current Solution: Square Images with Hotspot Support
 
-### Primary Strategy: Standardize on 4:3 with Hotspot Support
+### Implementation Strategy
 
-1. **Standard Aspect Ratio**: Require all images to be **4:3 landscape**
-2. **Use Hotspot**: Enable hotspot selection in Sanity for fine-tuning
-3. **Consistent Rendering**: Use 4:3 everywhere, crop to square on homepage if needed
+1. **Aspect Ratio**: All images displayed as **square (1:1)** on both homepage and item detail pages
+2. **Use Hotspot**: Hotspot selection enabled in Sanity for intelligent cropping
+3. **Image Array**: Single `images` array field - first image used on homepage, all images on detail page
+4. **CMS Guidance**: 4:3 aspect ratio preset available in cropper (for reference), but images render as squares
 
 ### Implementation Steps
 
@@ -318,10 +320,20 @@ If you can't standardize on one ratio, use this strategy:
 - **Professional**: Industry-standard approach
 - **Simple**: Easy rule for content creators
 
-### Next Steps
+## Current Implementation Status
 
-1. Update homepage to use 4:3 instead of square
-2. Update image URL builder to use hotspot
-3. Create CMS guidelines document
-4. Migrate existing images to 4:3
+✅ **Completed**:
+1. Hotspot support enabled and working
+2. Image URL builder uses hotspot automatically
+3. CMS guidance added to schema descriptions
+4. Square aspect ratio implemented consistently
+5. Images array with alt text and credit fields
+
+### Image Upload Guidelines (Current)
+
+- **Recommended**: Upload images as 4:3 landscape (preset available in cropper)
+- **Display**: Images render as squares (1:1) on both homepage and detail pages
+- **Required**: Set alt text for accessibility
+- **Optional**: Add credit/attribution
+- **Recommended**: Set hotspot (focal point) on important parts of image
 
