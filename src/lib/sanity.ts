@@ -66,18 +66,21 @@ export interface ItemDetail {
   }
   number?: number
   category?: {
+    _id?: string
     name: string
     slug?: {
       current: string
     }
   }
   designer?: {
+    _id?: string
     name: string
     slug?: {
       current: string
     }
   }
   brand?: {
+    _id?: string
     name: string
     slug?: {
       current: string
@@ -286,18 +289,24 @@ export async function getItemBySlug(slug: string): Promise<ItemDetail | null> {
       name,
       slug,
       number,
-      category->{
+      "category": category->{
+        _id,
         name,
         slug
       },
-      designer->{
+      "categoryRef": category._ref,
+      "designer": designer->{
+        _id,
         name,
         slug
       },
-      brand->{
+      "designerRef": designer._ref,
+      "brand": brand->{
+        _id,
         name,
         slug
       },
+      "brandRef": brand._ref,
       yearStart,
       yearEnd,
       description,
@@ -315,11 +324,99 @@ export async function getItemBySlug(slug: string): Promise<ItemDetail | null> {
       }
     }`
     
-    const item = await client.fetch<ItemDetail | null>(query, { slug })
-    return item || null
+    const item = await client.fetch<any>(query, { slug })
+    if (!item) return null
+    
+    // Map the reference IDs back to the category/designer/brand objects
+    const mappedItem: ItemDetail = {
+      ...item,
+      category: item.category ? { ...item.category, _id: item.categoryRef || item.category._id } : undefined,
+      designer: item.designer ? { ...item.designer, _id: item.designerRef || item.designer._id } : undefined,
+      brand: item.brand ? { ...item.brand, _id: item.brandRef || item.brand._id } : undefined,
+    }
+    
+    // Remove the temporary ref fields
+    delete mappedItem.categoryRef
+    delete mappedItem.designerRef
+    delete mappedItem.brandRef
+    
+    return mappedItem
   } catch (error) {
     console.error('Error fetching item by slug:', error)
     return null
+  }
+}
+
+/**
+ * Fetch related items for internal linking
+ * Returns items by same designer, category, or brand (excluding current item)
+ */
+export async function getRelatedItems(
+  currentItemId: string,
+  designerId?: string,
+  categoryId?: string,
+  brandId?: string,
+  limit: number = 6
+): Promise<Array<{ name: string; slug: string; href: string }>> {
+  try {
+    if (!designerId && !categoryId && !brandId) {
+      return [];
+    }
+
+    const conditions: string[] = [
+      '_type == "item"',
+      '!(_id in path("drafts.**"))',
+      `_id != $currentItemId`,
+    ];
+
+    const filters: string[] = [];
+    if (designerId) {
+      filters.push(`designer._ref == $designerId`);
+    }
+    if (categoryId) {
+      filters.push(`category._ref == $categoryId`);
+    }
+    if (brandId) {
+      filters.push(`brand._ref == $brandId`);
+    }
+
+    // Use OR logic to find items matching any of the criteria
+    const filterClause = filters.length > 0 ? `&& (${filters.join(' || ')})` : '';
+
+    const query = `*[${conditions.join(' && ')} ${filterClause}] | order(number asc) [0...${limit}] {
+      _id,
+      name,
+      slug,
+      category->{name},
+      designer->{name},
+      images[] {
+        asset->{
+          _id,
+          _type
+        },
+        hotspot,
+        crop,
+        alt
+      }
+    }`;
+
+    const params: any = { currentItemId };
+    if (designerId) params.designerId = designerId;
+    if (categoryId) params.categoryId = categoryId;
+    if (brandId) params.brandId = brandId;
+
+    const items = await client.fetch<HomepageItem[]>(query, params);
+
+    return (items || [])
+      .filter((item) => item.name && item.slug?.current)
+      .map((item) => ({
+        name: item.name,
+        slug: item.slug!.current,
+        href: `/items/${item.slug!.current}`,
+      }));
+  } catch (error) {
+    console.error('Error fetching related items:', error);
+    return [];
   }
 }
 

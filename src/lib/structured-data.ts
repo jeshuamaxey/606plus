@@ -111,3 +111,74 @@ export function generateWebSiteSchema() {
   };
 }
 
+/**
+ * Generate Product schema for individual item pages
+ */
+export interface ProductItem {
+  name: string;
+  description?: string;
+  image?: string;
+  imageAlt?: string;
+  url: string;
+  brand?: string;
+  designer?: {
+    name: string;
+  };
+  category?: string;
+  materials?: string;
+  yearStart?: number;
+  yearEnd?: number;
+}
+
+export function generateProductSchema(item: ProductItem) {
+  const schema: any = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: item.name,
+    url: item.url,
+  };
+
+  if (item.description) {
+    schema.description = item.description;
+  }
+
+  if (item.image) {
+    schema.image = {
+      '@type': 'ImageObject',
+      url: item.image,
+      ...(item.imageAlt && { contentUrl: item.image, encodingFormat: 'image/jpeg' }),
+    };
+  }
+
+  if (item.brand) {
+    schema.brand = {
+      '@type': 'Brand',
+      name: item.brand,
+    };
+  }
+
+  if (item.designer) {
+    schema.manufacturer = {
+      '@type': 'Person',
+      name: item.designer.name,
+    };
+  }
+
+  if (item.category) {
+    schema.category = item.category;
+  }
+
+  if (item.materials) {
+    schema.material = item.materials;
+  }
+
+  if (item.yearStart) {
+    const productionDate = item.yearEnd && item.yearEnd !== item.yearStart
+      ? `${item.yearStart}-${item.yearEnd}`
+      : item.yearStart.toString();
+    schema.productionDate = productionDate;
+  }
+
+  return schema;
+}
+

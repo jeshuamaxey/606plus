@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
+import Link from 'next/link';
 import { Navigation } from '@/components/ui/Navigation';
 import { Footer } from '@/components/ui/Footer';
 import { Container } from '@/components/ui/Container';
@@ -9,8 +10,16 @@ import { Badge } from '@/components/ui/Badge';
 import { Divider } from '@/components/ui/Divider';
 import { Spacer } from '@/components/ui/Spacer';
 import { ETrack } from '@/components/ui/ETrack';
-import { getItemBySlug, buildLargeImageUrl } from '@/lib/sanity';
+import { getItemBySlug, buildLargeImageUrl, getRelatedItems } from '@/lib/sanity';
 import type { ItemDetail } from '@/lib/sanity';
+import type { Metadata } from 'next';
+import {
+  generateProductSchema,
+  generateBreadcrumbSchema,
+  generatePersonSchema,
+} from '@/lib/structured-data';
+
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://606plus.jeshua.dev';
 
 interface PageProps {
   params: Promise<{
@@ -31,6 +40,123 @@ function formatYearRange(yearStart?: number, yearEnd?: number): string {
   return yearStart.toString();
 }
 
+/**
+ * Generate meta description for item
+ */
+function generateMetaDescription(item: ItemDetail): string {
+  const parts: string[] = [];
+  
+  parts.push(`The ${item.name}`);
+  
+  if (item.designer?.name) {
+    parts.push(`by ${item.designer.name}`);
+  }
+  
+  if (item.category?.name) {
+    parts.push(`- a ${item.category.name.toLowerCase()}`);
+  }
+  
+  if (item.yearStart) {
+    const yearDisplay = formatYearRange(item.yearStart, item.yearEnd);
+    parts.push(`(${yearDisplay})`);
+  }
+  
+  parts.push('that complements the Vitsoe 606 shelving system.');
+  
+  if (item.description) {
+    const desc = item.description.length > 80 
+      ? item.description.substring(0, 80) + '...'
+      : item.description;
+    parts.push(desc);
+  }
+  
+  return parts.join(' ');
+}
+
+/**
+ * Generate title for item page
+ */
+function generateTitle(item: ItemDetail): string {
+  if (item.designer?.name) {
+    return `${item.name} by ${item.designer.name} | 606+`;
+  }
+  if (item.yearStart) {
+    const yearDisplay = formatYearRange(item.yearStart, item.yearEnd);
+    return `${item.name} (${yearDisplay}) | 606+`;
+  }
+  return `${item.name} | 606+`;
+}
+
+/**
+ * Generate enhanced alt text for images
+ */
+function generateImageAlt(item: ItemDetail, imageIndex: number = 0, viewDescription?: string): string {
+  const parts: string[] = [item.name];
+  
+  if (item.designer?.name) {
+    parts.push(`by ${item.designer.name}`);
+  }
+  
+  if (item.category?.name) {
+    parts.push(`- ${item.category.name}`);
+  }
+  
+  if (viewDescription) {
+    parts.push(`- ${viewDescription}`);
+  } else if (imageIndex > 0) {
+    parts.push(`- additional view`);
+  }
+  
+  return parts.join(' ');
+}
+
+/**
+ * Generate metadata for item page
+ */
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const item = await getItemBySlug(slug);
+
+  if (!item) {
+    return {
+      title: 'Item Not Found | 606+',
+    };
+  }
+
+  const title = generateTitle(item);
+  const description = generateMetaDescription(item);
+  const firstImage = item.images?.[0];
+  const primaryImageUrl = firstImage ? buildLargeImageUrl(firstImage) : `${siteUrl}/606-Universal-Shelving-System.jpg`;
+  const primaryImageAlt = firstImage?.alt || generateImageAlt(item, 0);
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title: `${item.name} | 606+`,
+      description,
+      url: `${siteUrl}/items/${slug}`,
+      images: [
+        {
+          url: primaryImageUrl,
+          width: 1200,
+          height: 630,
+          alt: primaryImageAlt,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${item.name} | 606+`,
+      description,
+      images: [primaryImageUrl],
+    },
+    alternates: {
+      canonical: `${siteUrl}/items/${slug}`,
+    },
+  };
+}
+
 export default async function ItemPage({ params }: PageProps) {
   const { slug } = await params;
   const item = await getItemBySlug(slug);
@@ -46,22 +172,94 @@ export default async function ItemPage({ params }: PageProps) {
 
   const firstImage = item.images?.[0];
   const primaryImageUrl = firstImage ? buildLargeImageUrl(firstImage) : '';
-  const primaryImageAlt = firstImage?.alt || item.name;
-  const additionalImages = item.images?.slice(1).map((img) => ({
+  const primaryImageAlt = firstImage?.alt || generateImageAlt(item, 0);
+  const additionalImages = item.images?.slice(1).map((img, index) => ({
     url: buildLargeImageUrl(img),
-    alt: img.alt || `${item.name} - additional view`,
+    alt: img.alt || generateImageAlt(item, index + 1),
   })).filter((img) => img.url) || [];
   const yearDisplay = formatYearRange(item.yearStart, item.yearEnd);
 
+  // Fetch related items for internal linking
+  const relatedItems = await getRelatedItems(
+    item._id,
+    item.designer?._id,
+    item.category?._id,
+    item.brand?._id,
+    6
+  );
+
+  // Generate structured data
+  const productSchema = generateProductSchema({
+    name: item.name,
+    description: item.description,
+    image: primaryImageUrl,
+    imageAlt: primaryImageAlt,
+    url: `${siteUrl}/items/${slug}`,
+    brand: item.brand?.name,
+    designer: item.designer,
+    category: item.category?.name,
+    materials: item.materials,
+    yearStart: item.yearStart,
+    yearEnd: item.yearEnd,
+  });
+
+  const breadcrumbSchema = generateBreadcrumbSchema([
+    { name: 'Home', url: '/' },
+    { name: 'Items', url: '/' },
+    { name: item.name, url: `/items/${slug}` },
+  ]);
+
+  // Generate designer Person schema if available
+  const designerSchema = item.designer?.name
+    ? generatePersonSchema(item.designer.name, `${siteUrl}/items/${slug}`)
+    : null;
+
   return (
     <div className="min-h-screen bg-white flex flex-col">
+      {/* Structured Data (JSON-LD) */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      {designerSchema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(designerSchema) }}
+        />
+      )}
+
       <Navigation links={navLinks} />
       
       <main className="flex-1">
         <Section spacing="lg">
           <Container size="lg">
+            {/* Breadcrumb Navigation */}
+            <nav aria-label="Breadcrumb" className="mb-8">
+              <ol className="flex items-center gap-2 text-sm text-neutral-600">
+                <li>
+                  <Link href="/" className="hover:text-neutral-900 transition-colors">
+                    Home
+                  </Link>
+                </li>
+                <li aria-hidden="true" className="text-neutral-400">/</li>
+                <li>
+                  <Link href="/" className="hover:text-neutral-900 transition-colors">
+                    Items
+                  </Link>
+                </li>
+                <li aria-hidden="true" className="text-neutral-400">/</li>
+                <li className="text-neutral-900" aria-current="page">
+                  {item.name}
+                </li>
+              </ol>
+            </nav>
+
             {/* Asymmetric 2-column layout: 2/3 left, 1/3 right */}
-            <div className="relative">
+            <article className="relative">
               {/* Left edge track */}
               <ETrack position="left" className="left-0" />
               
@@ -153,7 +351,11 @@ export default async function ItemPage({ params }: PageProps) {
                     {yearDisplay && (
                       <div>
                         <Label className="text-xs mb-1 block">Year</Label>
-                        <BodyText size="sm">{yearDisplay}</BodyText>
+                        <BodyText size="sm">
+                          <time dateTime={item.yearStart?.toString() || ''}>
+                            {yearDisplay}
+                          </time>
+                        </BodyText>
                       </div>
                     )}
 
@@ -188,7 +390,35 @@ export default async function ItemPage({ params }: PageProps) {
                 </div>
               </div>
               </div>
-            </div>
+            </article>
+
+            {/* Related Items Section */}
+            {relatedItems.length > 0 && (
+              <Section spacing="lg" className="mt-16">
+                <div className="mb-8">
+                  <Heading level={2} className="mb-2">
+                    Related Items
+                  </Heading>
+                  <BodyText size="sm" className="text-neutral-600">
+                    Explore more design objects {item.designer?.name ? `by ${item.designer.name}` : ''} {item.category?.name ? `in ${item.category.name}` : ''}
+                  </BodyText>
+                </div>
+                <nav aria-label="Related items">
+                  <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {relatedItems.map((relatedItem) => (
+                      <li key={relatedItem.slug}>
+                        <Link
+                          href={relatedItem.href}
+                          className="block text-neutral-600 hover:text-neutral-900 transition-colors"
+                        >
+                          <BodyText size="sm">{relatedItem.name}</BodyText>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </nav>
+              </Section>
+            )}
           </Container>
         </Section>
       </main>
