@@ -32,7 +32,11 @@ export const Navigation: React.FC<NavigationProps> = ({ links, className = '' })
     <nav className={`border-b border-neutral-200 ${className}`}>
       <div className="max-w-7xl mx-auto px-6 md:px-8">
         <div className="flex items-center justify-between h-20">
-          <Link href="/" className="text-2xl font-light tracking-tight text-neutral-900">
+          <Link 
+            href="/" 
+            className="text-2xl font-light tracking-tight text-neutral-900"
+            style={{ fontFamily: 'var(--font-stack-sans-notch), var(--font-geist-sans), sans-serif' }}
+          >
             606 + <span className="text-neutral-600 border-b border-neutral-600">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
           </Link>
           <div className="flex items-center gap-8">

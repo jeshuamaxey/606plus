@@ -1,4 +1,4 @@
-import { Navigation } from '@/components/ui/Navigation';
+import { ScrollAwareNavigation } from '@/components/ui/ScrollAwareNavigation';
 import { ETrackRowGrid } from '@/components/ui/ETrackRowGrid';
 import { Footer } from '@/components/ui/Footer';
 import { Container } from '@/components/ui/Container';
@@ -93,16 +93,17 @@ export default async function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
 
-      <Navigation links={navLinks} />
+      <ScrollAwareNavigation links={navLinks} />
       
       <main className="flex-1">
-        <Section spacing="lg" className="py-0 md:py-24">
+        <Section spacing="lg" className="py-0 md:py-12">
           <Container size="lg">
             {/* Hero Section with H1 */}
-            <div className="mb-12 text-center max-w-3xl mx-auto">
+            <div id="home-header" className="mb-12 text-left max-w-3xl">
               <Heading level={1} className="mb-4">
-                Design object catalogue
+                606+
               </Heading>
+
               <BodyText size="lg" weight="light" className="text-neutral-600">
                 A curated collection of design objects that complement the Vitsoe 606 shelving system. 
                 Pleasing to the eye, rewarding to explore.
