@@ -329,16 +329,20 @@ export async function getItemBySlug(slug: string): Promise<ItemDetail | null> {
     
     // Map the reference IDs back to the category/designer/brand objects
     const mappedItem: ItemDetail = {
-      ...item,
+      _id: item._id,
+      name: item.name,
+      slug: item.slug,
+      number: item.number,
       category: item.category ? { ...item.category, _id: item.categoryRef || item.category._id } : undefined,
       designer: item.designer ? { ...item.designer, _id: item.designerRef || item.designer._id } : undefined,
       brand: item.brand ? { ...item.brand, _id: item.brandRef || item.brand._id } : undefined,
+      yearStart: item.yearStart,
+      yearEnd: item.yearEnd,
+      description: item.description,
+      materials: item.materials,
+      dimensions: item.dimensions,
+      images: item.images,
     }
-    
-    // Remove the temporary ref fields
-    delete mappedItem.categoryRef
-    delete mappedItem.designerRef
-    delete mappedItem.brandRef
     
     return mappedItem
   } catch (error) {
