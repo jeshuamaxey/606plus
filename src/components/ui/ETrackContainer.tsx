@@ -82,8 +82,8 @@ export function ETrackContainer({
   // Build classes for the three nested divs
   // Each div has a border (creating a line) and padding (creating a gap)
   const borderClasses = [
-    left && 'border-l border-l-neutral-300',
-    right && 'border-r border-r-neutral-300',
+    left && 'h-full border-l border-l-neutral-300',
+    right && 'h-full border-r border-r-neutral-300',
   ].filter(Boolean).join(' ');
 
   const paddingClasses = [
