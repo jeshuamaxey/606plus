@@ -20,17 +20,28 @@ export const Heading: React.FC<HeadingProps> = ({
     6: 'text-lg md:text-xl font-bold tracking-tight text-neutral-900',
   };
   
-  const Tag = `h${level}` as keyof JSX.IntrinsicElements;
+  const baseProps = {
+    className: `${styles[level]} ${className}`,
+    style: { fontFamily: 'var(--font-stack-sans-notch), var(--font-geist-sans), sans-serif' },
+    ...props,
+  };
   
-  return (
-    <Tag 
-      className={`${styles[level]} ${className}`}
-      style={{ fontFamily: 'var(--font-stack-sans-notch), var(--font-geist-sans), sans-serif' }}
-      {...props}
-    >
-      {children}
-    </Tag>
-  );
+  switch (level) {
+    case 1:
+      return <h1 {...baseProps}>{children}</h1>;
+    case 2:
+      return <h2 {...baseProps}>{children}</h2>;
+    case 3:
+      return <h3 {...baseProps}>{children}</h3>;
+    case 4:
+      return <h4 {...baseProps}>{children}</h4>;
+    case 5:
+      return <h5 {...baseProps}>{children}</h5>;
+    case 6:
+      return <h6 {...baseProps}>{children}</h6>;
+    default:
+      return <h1 {...baseProps}>{children}</h1>;
+  }
 };
 
 interface BodyTextProps extends React.HTMLAttributes<HTMLParagraphElement> {

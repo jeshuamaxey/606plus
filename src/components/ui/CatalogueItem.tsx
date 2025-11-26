@@ -55,9 +55,9 @@ export function CatalogueItem({
     <div className={`bg-white border-b border-neutral-200 relative ${className}`}>
       {imageContainer}
       {(title || subtitle) && (
-        <div className="p-4 pl-4 group-hover:pl-5 transition-all duration-300 ease-in-out">
+        <div className="p-4 pl-4">
           {title && (
-            <h4 className="text-sm font-medium text-neutral-900 mb-1">{title}</h4>
+            <h4 className="text-sm font-medium text-neutral-900 mb-1 font-sans">{title}</h4>
           )}
           {subtitle && (
             <p className="text-xs text-neutral-600 uppercase tracking-wide">{subtitle}</p>
