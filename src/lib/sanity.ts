@@ -28,13 +28,26 @@ export interface HomepageItem {
   }
   yearStart?: number
   yearEnd?: number
-  image?: {
+  images?: Array<{
     asset?: {
       _id: string
       _type: string
-      url?: string
     }
-  }
+    hotspot?: {
+      x: number
+      y: number
+      height: number
+      width: number
+    }
+    crop?: {
+      top: number
+      bottom: number
+      left: number
+      right: number
+    }
+    alt?: string
+    credit?: string
+  }>
 }
 
 export interface TransformedItem {
@@ -43,6 +56,58 @@ export interface TransformedItem {
   image: string
   imageAlt: string
   href: string
+}
+
+export interface ItemDetail {
+  _id: string
+  name: string
+  slug: {
+    current: string
+  }
+  number?: number
+  category?: {
+    name: string
+    slug?: {
+      current: string
+    }
+  }
+  designer?: {
+    name: string
+    slug?: {
+      current: string
+    }
+  }
+  brand?: {
+    name: string
+    slug?: {
+      current: string
+    }
+  }
+  yearStart?: number
+  yearEnd?: number
+  description?: string
+  materials?: string
+  dimensions?: string
+  images?: Array<{
+    asset?: {
+      _id: string
+      _type: string
+    }
+    hotspot?: {
+      x: number
+      y: number
+      height: number
+      width: number
+    }
+    crop?: {
+      top: number
+      bottom: number
+      left: number
+      right: number
+    }
+    alt?: string
+    credit?: string
+  }>
 }
 
 /**
@@ -56,14 +121,48 @@ function generateSlug(name: string): string {
 }
 
 /**
- * Build image URL from Sanity image reference
+ * Build image URL from Sanity image reference with hotspot support
  */
-function buildImageUrl(image: HomepageItem['image']): string {
+function buildImageUrl(image: ImageReference | null | undefined): string {
   if (!image?.asset?._id) {
     return ''
   }
-  // Use the asset reference to build the URL
+  
+  // Sanity's image URL builder automatically uses hotspot if present in the image object
+  // This ensures intelligent cropping that keeps the focal point visible
   return builder.image(image).width(800).height(800).fit('crop').url()
+}
+
+/**
+ * Build image URL for larger display (item detail page) with hotspot support
+ */
+type ImageReference = {
+  asset?: {
+    _id: string
+    _type: string
+  }
+  hotspot?: {
+    x: number
+    y: number
+    height: number
+    width: number
+  }
+  crop?: {
+    top: number
+    bottom: number
+    left: number
+    right: number
+  }
+}
+
+export function buildLargeImageUrl(image: ImageReference | null | undefined): string {
+  if (!image?.asset?._id) {
+    return ''
+  }
+  
+  // Sanity's image URL builder automatically uses hotspot if present in the image object
+  // This ensures intelligent cropping that keeps the focal point visible
+  return builder.image(image).width(1200).height(1200).fit('crop').url()
 }
 
 /**
@@ -141,11 +240,15 @@ export async function getHomepageItems(): Promise<TransformedItem[]> {
       brand->{name},
       yearStart,
       yearEnd,
-      image {
+      images[] {
         asset->{
           _id,
           _type
-        }
+        },
+        hotspot,
+        crop,
+        alt,
+        credit
       }
     }`
     
@@ -155,7 +258,8 @@ export async function getHomepageItems(): Promise<TransformedItem[]> {
       .filter((item) => item.name) // Only include items with names
       .map((item) => {
         const slug = item.slug?.current || generateSlug(item.name)
-        const imageUrl = buildImageUrl(item.image)
+        const firstImage = item.images?.[0]
+        const imageUrl = firstImage ? buildImageUrl(firstImage) : ''
         
         return {
           title: item.name,
@@ -169,6 +273,53 @@ export async function getHomepageItems(): Promise<TransformedItem[]> {
   } catch (error) {
     console.error('Error fetching homepage items:', error)
     return []
+  }
+}
+
+/**
+ * Fetch a single item by slug from Sanity CMS
+ */
+export async function getItemBySlug(slug: string): Promise<ItemDetail | null> {
+  try {
+    const query = `*[_type == "item" && slug.current == $slug && !(_id in path("drafts.**"))][0] {
+      _id,
+      name,
+      slug,
+      number,
+      category->{
+        name,
+        slug
+      },
+      designer->{
+        name,
+        slug
+      },
+      brand->{
+        name,
+        slug
+      },
+      yearStart,
+      yearEnd,
+      description,
+      materials,
+      dimensions,
+      images[] {
+        asset->{
+          _id,
+          _type
+        },
+        hotspot,
+        crop,
+        alt,
+        credit
+      }
+    }`
+    
+    const item = await client.fetch<ItemDetail | null>(query, { slug })
+    return item || null
+  } catch (error) {
+    console.error('Error fetching item by slug:', error)
+    return null
   }
 }
 

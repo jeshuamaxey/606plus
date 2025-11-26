@@ -21,12 +21,16 @@ The CMS includes four schemas:
 - **Item**: Catalogue items with fields:
   - number (#)
   - name
+  - slug
+  - images (array - each with alt text, credit, hotspot)
   - category (reference - required)
   - designer (reference - optional)
   - brand (reference - optional)
   - yearStart (optional)
   - yearEnd (optional)
   - description
+  - materials (optional)
+  - dimensions (optional)
 
 ### Populating the CMS
 
