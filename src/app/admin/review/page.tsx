@@ -2,6 +2,7 @@ import Link from 'next/link'
 import {getTasks} from './tasks'
 import {TasksList} from './tasks-list'
 import {ReviewTasksButton} from './review-tasks-button'
+import {LogoutButton} from './logout-button'
 
 export const dynamic = 'force-dynamic'
 
@@ -11,9 +12,12 @@ export default async function AdminReviewIndexPage() {
   return (
     <div className="min-h-screen bg-zinc-50 p-8">
       <div className="mx-auto max-w-4xl">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-zinc-900 mb-2">Admin Review</h1>
-          <p className="text-zinc-600">Review and manage content in the CMS</p>
+        <div className="mb-8 flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-zinc-900 mb-2">Admin Review</h1>
+            <p className="text-zinc-600">Review and manage content in the CMS</p>
+          </div>
+          <LogoutButton />
         </div>
         
         {/* Tasks Section */}
