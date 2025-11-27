@@ -43,47 +43,45 @@ export default function AboutPage() {
       <Navigation links={navLinks} />
       
       <main className="flex-1">
-        <Section spacing="xl">
-          <Container size="md">
-            <ETrackContainer left right>
-              <div className="max-w-3xl mx-auto px-4 md:px-8">
-                <Heading level={1} className="mb-8 text-center">
-                  About
-                </Heading>
-                
-                <div className="mb-12">
-                  <ImageDisplay 
-                    src={vitsoe606Image}
-                    alt="Vitsoe 606 Universal Shelving System"
-                    aspectRatio="wide"
-                    caption="Vitsoe 606 Universal Shelving System, designed by Dieter Rams, 1960"
-                  />
-                </div>
-
-                <div className="space-y-6">
-                  <BodyText size="lg" weight="light">
-                    <a href="https://www.vitsoe.com/gb/606" className="text-neutral-900 underline hover:text-neutral-600 transition-colors" target="_blank">The Vitsoe 606 Universal Shelving System, designed by Dieter Rams</a> in 1960, embodies a philosophy of permanence and precision. It is furniture that adapts to changing needs rather than becoming obsolete—a system built to last generations, not seasons.
-                  </BodyText>
-
-                  <BodyText>
-                    This catalogue exists to document objects that share the 606 system&apos;s DNA: designs that prioritize function over fashion, precision over decoration, and timelessness over trends. Each object has been selected not merely for aesthetic compatibility, but for its alignment with the same principles that make 606 enduring—principles that transcend categories, eras, and makers. Together, they form a collection that demonstrates good design is recognizable, universal, and permanent.
-                  </BodyText>
-
-                  <BodyText>
-                    This is a personal project by me, Jeshua Maxey. It has no official affiliation with Vitsoe. I maintain it on an ad hoc basis as I discover new objects. I&apos;m interested in hearing about how others use Vitsoe 606 and welcome suggestions for new objects to add to this collection. You can reach me at{' '}
-                    <a 
-                      href="mailto:jeshua@me.com" 
-                      className="text-neutral-900 underline hover:text-neutral-600 transition-colors"
-                    >
-                      me@jeshua.co
-                    </a>
-                    .
-                  </BodyText>
-                </div>
+        <Container size="md">
+          <ETrackContainer left right>
+            <div className="max-w-3xl mx-auto px-4 md:px-8 py-8 md:py-16">
+              <Heading level={1} className="mb-8 md:mb-16 text-center">
+                About
+              </Heading>
+              
+              <div className="mb-12">
+                <ImageDisplay 
+                  src={vitsoe606Image}
+                  alt="Vitsoe 606 Universal Shelving System"
+                  aspectRatio="wide"
+                  caption="Vitsoe 606 Universal Shelving System, designed by Dieter Rams, 1960"
+                />
               </div>
-            </ETrackContainer>
-          </Container>
-        </Section>
+
+              <div className="space-y-6">
+                <BodyText size="lg" weight="light">
+                  <a href="https://www.vitsoe.com/gb/606" className="text-neutral-900 underline hover:text-neutral-600 transition-colors" target="_blank">The Vitsoe 606 Universal Shelving System, designed by Dieter Rams</a> in 1960, embodies a philosophy of permanence and precision. It is furniture that adapts to changing needs rather than becoming obsolete—a system built to last generations, not seasons.
+                </BodyText>
+
+                <BodyText>
+                  This catalogue exists to document objects that share the 606 system&apos;s DNA: designs that prioritize function over fashion, precision over decoration, and timelessness over trends. Each object has been selected not merely for aesthetic compatibility, but for its alignment with the same principles that make 606 enduring—principles that transcend categories, eras, and makers. Together, they form a collection that demonstrates good design is recognizable, universal, and permanent.
+                </BodyText>
+
+                <BodyText>
+                  This is a personal project by me, Jeshua Maxey. It has no official affiliation with Vitsoe. I maintain it on an ad hoc basis as I discover new objects. I&apos;m interested in hearing about how others use Vitsoe 606 and welcome suggestions for new objects to add to this collection. You can reach me at{' '}
+                  <a 
+                    href="mailto:jeshua@me.com" 
+                    className="text-neutral-900 underline hover:text-neutral-600 transition-colors"
+                  >
+                    me@jeshua.co
+                  </a>
+                  .
+                </BodyText>
+              </div>
+            </div>
+          </ETrackContainer>
+        </Container>
       </main>
 
       <Footer />

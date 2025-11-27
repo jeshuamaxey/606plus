@@ -30,7 +30,7 @@ interface NavigationProps {
 export const Navigation: React.FC<NavigationProps> = ({ links, className = '' }) => {
   return (
     <nav className={`border-b border-neutral-200 ${className}`}>
-      <div className="max-w-7xl mx-auto px-6 md:px-8">
+      <div className="max-w-7xl mx-2 md:mx-auto px-2 md:px-8">
         <div className="flex items-center justify-between h-20">
           <Link 
             href="/" 

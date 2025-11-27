@@ -20,7 +20,7 @@ export const Container: React.FC<ContainerProps> = ({
   };
   
   return (
-    <div className={`mx-auto px-6 md:px-8 ${sizes[size]} ${className}`}>
+    <div className={`mx-2 md:mx-auto md:px-8 ${sizes[size]} ${className}`}>
       {children}
     </div>
   );
