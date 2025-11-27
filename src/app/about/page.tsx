@@ -45,8 +45,8 @@ export default function AboutPage() {
       <main className="flex-1">
         <Section spacing="xl">
           <Container size="md">
-            <ETrackContainer left right className="hidden md:block">
-              <div className="max-w-3xl mx-auto px-8">
+            <ETrackContainer left right>
+              <div className="max-w-3xl mx-auto px-4 md:px-8">
                 <Heading level={1} className="mb-8 text-center">
                   About
                 </Heading>
