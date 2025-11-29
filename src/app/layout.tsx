@@ -1,5 +1,5 @@
 import { Analytics } from "@vercel/analytics/next"
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Stack_Sans_Notch } from "next/font/google";
 import "./globals.css";
 
@@ -15,11 +15,14 @@ const geistMono = Geist_Mono({
 
 // Stack Sans Notch - Bold display font for headings
 // Available on Google Fonts: https://fonts.google.com/specimen/Stack+Sans+Notch
+// Note: Next.js may warn about missing font metrics, but this is harmless.
+// CSS fallbacks are configured in globals.css (var(--font-geist-sans), sans-serif)
 const stackSansNotch = Stack_Sans_Notch({
   variable: "--font-stack-sans-notch",
   subsets: ["latin"],
   weight: "700", // Bold weight for display headings
   display: "swap",
+  adjustFontFallback: false, // CSS handles fallbacks
 });
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://606plus.jeshua.dev';
@@ -59,11 +62,12 @@ export const metadata: Metadata = {
   icons: {
     icon: "/favicon.ico",
   },
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 5,
-  },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
   themeColor: "#ffffff",
 };
 
