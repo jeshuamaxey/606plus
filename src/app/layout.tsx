@@ -15,14 +15,14 @@ const geistMono = Geist_Mono({
 
 // Stack Sans Notch - Bold display font for headings
 // Available on Google Fonts: https://fonts.google.com/specimen/Stack+Sans+Notch
-// Note: adjustFontFallback is disabled because Next.js can't find font metrics for this font.
-// CSS fallbacks are already configured in globals.css (var(--font-geist-sans), sans-serif)
+// Note: Next.js may warn about missing font metrics, but this is harmless.
+// CSS fallbacks are configured in globals.css (var(--font-geist-sans), sans-serif)
 const stackSansNotch = Stack_Sans_Notch({
   variable: "--font-stack-sans-notch",
   subsets: ["latin"],
   weight: "700", // Bold weight for display headings
   display: "swap",
-  adjustFontFallback: false, // Disable automatic fallback - CSS handles fallbacks
+  adjustFontFallback: false, // CSS handles fallbacks
 });
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://606plus.jeshua.dev';
