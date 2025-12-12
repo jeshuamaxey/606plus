@@ -18,4 +18,5 @@ export { ETrackGrid } from './ETrackGrid';
 export { ETrackRowGrid } from './ETrackRowGrid';
 export { ETrackContainer } from './ETrackContainer';
 export { Footer } from './Footer';
+export { PortableText } from './PortableText';
 

@@ -1,5 +1,6 @@
 import {createClient} from '@sanity/client'
 import imageUrlBuilder from '@sanity/image-url'
+import type {PortableTextBlock} from '@portabletext/types'
 
 const client = createClient({
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || '',
@@ -88,7 +89,7 @@ export interface ItemDetail {
   }
   yearStart?: number
   yearEnd?: number
-  description?: string
+  description?: PortableTextBlock[]
   materials?: string
   dimensions?: string
   images?: Array<{
@@ -208,6 +209,43 @@ function generateImageAlt(item: HomepageItem): string {
  */
 export function generateSlugFromName(name: string): string {
   return generateSlug(name);
+}
+
+/**
+ * Extract plain text from Portable Text blocks
+ * Recursively traverses blocks and their children to extract text content
+ */
+export function portableTextToPlainText(blocks: PortableTextBlock[] | null | undefined): string {
+  if (!blocks || !Array.isArray(blocks)) {
+    return '';
+  }
+
+  return blocks
+    .map((block) => {
+      // Handle block-level content
+      if (block._type === 'block' && block.children) {
+        return block.children
+          .map((child: any) => {
+            // Handle text spans
+            if (typeof child === 'object' && child.text) {
+              return child.text;
+            }
+            // Handle nested structures
+            if (typeof child === 'string') {
+              return child;
+            }
+            return '';
+          })
+          .join('');
+      }
+      // Handle other block types (custom blocks, etc.)
+      if (typeof block === 'object' && 'text' in block) {
+        return (block as any).text || '';
+      }
+      return '';
+    })
+    .filter((text) => text.length > 0)
+    .join('\n\n');
 }
 
 /**
