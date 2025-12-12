@@ -10,8 +10,9 @@ import { Badge } from '@/components/ui/Badge';
 import { Divider } from '@/components/ui/Divider';
 import { Spacer } from '@/components/ui/Spacer';
 import { ETrack } from '@/components/ui/ETrack';
-import { getItemBySlug, buildLargeImageUrl, getRelatedItems } from '@/lib/sanity';
+import { getItemBySlug, buildLargeImageUrl, getRelatedItems, portableTextToPlainText } from '@/lib/sanity';
 import type { ItemDetail } from '@/lib/sanity';
+import { PortableText } from '@/components/ui/PortableText';
 import type { Metadata } from 'next';
 import {
   generateProductSchema,
@@ -64,10 +65,13 @@ function generateMetaDescription(item: ItemDetail): string {
   parts.push('that complements the Vitsoe 606 shelving system.');
   
   if (item.description) {
-    const desc = item.description.length > 80 
-      ? item.description.substring(0, 80) + '...'
-      : item.description;
-    parts.push(desc);
+    const plainText = portableTextToPlainText(item.description);
+    if (plainText) {
+      const desc = plainText.length > 80 
+        ? plainText.substring(0, 80) + '...'
+        : plainText;
+      parts.push(desc);
+    }
   }
   
   return parts.join(' ');
@@ -191,7 +195,7 @@ export default async function ItemPage({ params }: PageProps) {
   // Generate structured data
   const productSchema = generateProductSchema({
     name: item.name,
-    description: item.description,
+    description: item.description ? portableTextToPlainText(item.description) : undefined,
     image: primaryImageUrl,
     imageAlt: primaryImageAlt,
     url: `${siteUrl}/items/${slug}`,
@@ -381,9 +385,7 @@ export default async function ItemPage({ params }: PageProps) {
                     <>
                       <Divider />
                       <div>
-                        <BodyText size="md" weight="light" className="leading-relaxed">
-                          {item.description}
-                        </BodyText>
+                        <PortableText value={item.description} />
                       </div>
                     </>
                   )}
