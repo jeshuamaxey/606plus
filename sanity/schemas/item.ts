@@ -123,6 +123,24 @@ export default defineType({
       type: 'string',
       description: 'Dimensions of the object (e.g., "240×180×280", "Ø 34mm")',
     }),
+    defineField({
+      name: 'displayWidth',
+      title: 'Display Width (mm)',
+      type: 'number',
+      description: 'Width in millimeters for shelf visualization',
+    }),
+    defineField({
+      name: 'displayHeight',
+      title: 'Display Height (mm)',
+      type: 'number',
+      description: 'Height in millimeters for shelf visualization',
+    }),
+    defineField({
+      name: 'displayDepth',
+      title: 'Display Depth (mm)',
+      type: 'number',
+      description: 'Depth in millimeters for shelf visualization',
+    }),
   ],
   preview: {
     select: {

@@ -52,6 +52,7 @@ export default async function Home() {
   const navLinks = [
     { href: '/', label: 'Home', active: true },
     { href: '/about', label: 'About', active: false },
+    { href: '/my-606', label: 'My 606', active: false },
   ];
 
   // Generate structured data

@@ -34,6 +34,7 @@ export default function AboutPage() {
   const navLinks = [
     { href: '/', label: 'Home', active: false },
     { href: '/about', label: 'About', active: true },
+    { href: '/my-606', label: 'My 606', active: false },
   ];
 
   const vitsoe606Image = '/606-Universal-Shelving-System.jpg';

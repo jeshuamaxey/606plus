@@ -168,6 +168,7 @@ export default async function ItemPage({ params }: PageProps) {
   const navLinks = [
     { href: '/', label: 'Home', active: false },
     { href: '/about', label: 'About', active: false },
+    { href: '/my-606', label: 'My 606', active: false },
   ];
 
   const firstImage = item.images?.[0];

@@ -113,6 +113,49 @@ export interface ItemDetail {
   }>
 }
 
+export interface ShelfItem {
+  _id: string
+  name: string
+  slug: {
+    current: string
+  }
+  number?: number
+  displayWidth?: number
+  displayHeight?: number
+  displayDepth?: number
+  category?: {
+    name: string
+  }
+  designer?: {
+    name: string
+  }
+  brand?: {
+    name: string
+  }
+  yearStart?: number
+  yearEnd?: number
+  images?: Array<{
+    asset?: {
+      _id: string
+      _type: string
+    }
+    hotspot?: {
+      x: number
+      y: number
+      height: number
+      width: number
+    }
+    crop?: {
+      top: number
+      bottom: number
+      left: number
+      right: number
+    }
+    alt?: string
+    credit?: string
+  }>
+}
+
 /**
  * Generate a slug from a name (fallback if slug doesn't exist)
  */
@@ -126,7 +169,7 @@ function generateSlug(name: string): string {
 /**
  * Build image URL from Sanity image reference with hotspot support
  */
-function buildImageUrl(image: ImageReference | null | undefined): string {
+export function buildImageUrl(image: ImageReference | null | undefined): string {
   if (!image?.asset?._id) {
     return ''
   }
@@ -421,6 +464,46 @@ export async function getRelatedItems(
   } catch (error) {
     console.error('Error fetching related items:', error);
     return [];
+  }
+}
+
+/**
+ * Fetch all published items for shelf visualization
+ * Includes display dimensions and all necessary metadata
+ */
+export async function getAllItemsForShelves(): Promise<ShelfItem[]> {
+  try {
+    const query = `*[_type == "item" && !(_id in path("drafts.**"))] | order(number asc) {
+      _id,
+      name,
+      slug,
+      number,
+      displayWidth,
+      displayHeight,
+      displayDepth,
+      category->{name},
+      designer->{name},
+      brand->{name},
+      yearStart,
+      yearEnd,
+      images[] {
+        asset->{
+          _id,
+          _type
+        },
+        hotspot,
+        crop,
+        alt,
+        credit
+      }
+    }`
+    
+    const items = await client.fetch<ShelfItem[]>(query)
+    
+    return (items || []).filter((item) => item.name && item.images && item.images.length > 0)
+  } catch (error) {
+    console.error('Error fetching items for shelves:', error)
+    return []
   }
 }
 
